@@ -96,13 +96,24 @@
   <ol>
     <li>Instala o <a href="https://play.google.com/store/apps/details?id=com.wakdev.wdnfc">NFC Tools</a> (Android) ou <a href="https://apps.apple.com/app/nfc-tools/id1252962749">NFC Tools</a> (iPhone).</li>
     <li>Abre o app → <strong>Escrever</strong> / <strong>Write</strong>.</li>
-    <li><strong>Adicionar um registro</strong> → <strong>URL / URI</strong> (não texto, não contato).</li>
-    <li>Cola a URL copiada acima. Tem que começar com <code>https://</code>.</li>
-    <li>Toca em <strong>Escrever / Write / Escrever + NFC</strong>.</li>
-    <li>Encosta o cartão na traseira do celular e segura 2 segundos (Android: no meio das costas; iPhone: no topo, perto da câmera).</li>
-    <li>Quando der “sucesso”, afasta. Testa encostando de novo: o navegador tem que abrir o cartão sozinho.</li>
+    <li>Se já gravou antes: <strong>Outros</strong> → <strong>Apagar / Erase</strong> o cartão, depois volta em Escrever.</li>
+    <li><strong>Adicionar um registro</strong> → <strong>URL / URI</strong> (não texto, não contato). Cola a URL. Tem que começar com <code>https://</code>.</li>
+    <li><strong>Adicionar um registro</strong> de novo → <strong>Aplicativo / Application / Aplicação</strong> → escolhe o <strong>Chrome</strong> (<code>com.android.chrome</code>). Sem isso o Android 15/16 manda o link só pra notificação.</li>
+    <li>Toca em <strong>Escrever / Write</strong>.</li>
+    <li>Encosta o cartão na traseira e segura 2 segundos (Android: meio das costas; iPhone: topo, perto da câmera).</li>
+    <li>Quando der “sucesso”, sai do NFC Tools. Tela ligada e desbloqueada, encosta de novo: o Chrome tem que abrir o cartão sozinho.</li>
   </ol>
   <a class="btn btn-ghost" href="https://play.google.com/store/apps/details?id=com.wakdev.wdnfc">Abrir NFC Tools na Play Store</a>
+
+  <h2>Se ainda cair na notificação</h2>
+  <ol>
+    <li>Ajusta → pesquisa <strong>Iniciar via NFC</strong> (ou <em>Launch via NFC</em>).</li>
+    <li>Liga o interruptor do <strong>Chrome</strong> (e do navegador padrão, se aparecer).</li>
+    <li>Tela <strong>ligada e desbloqueada</strong> na hora do toque. Com a tela apagada o Android só notifica.</li>
+    <li>No primeiro toque, se a notificação pedir permissão, toca nela e <strong>permite</strong> o Chrome. O próximo toque já abre direto.</li>
+    <li>Samsung: Ajustes → Conexões → NFC → menu ⋮ → desliga “Mostrar notificações NFC” se existir.</li>
+  </ol>
+  <p class="lead">iPhone ignora o registro de aplicativo e abre o Safari no URL. Quem usa Android sem Chrome pode cair na Play Store — a maioria já tem Chrome.</p>
 
   <h2>4. Conferir</h2>
   <ol>

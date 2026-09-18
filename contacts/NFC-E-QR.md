@@ -29,10 +29,13 @@ Qualquer tag **NTAG213** (ou maior: 215/216) serve — a URL é curta. Cartão P
 
    `https://andredev21.github.io/andre-portifolio/contacts/`
 
-4. **Escrever** e encosta a tag na parte de trás do celular (no Android o ponto NFC costuma ficar no meio; no iPhone, no topo).
-5. Testa com outro celular: o toque deve abrir o navegador direto no cartão.
+4. **Adicionar um registro** de novo → **Aplicativo / Application** → **Chrome** (`com.android.chrome`). Sem esse segundo registro, Android 15/16 manda o https só pra barra de notificação.
+5. **Escrever** e encosta a tag na parte de trás do celular (no Android o ponto NFC costuma ficar no meio; no iPhone, no topo).
+6. Sai do NFC Tools, tela ligada e desbloqueada, testa de novo: o Chrome deve abrir o cartão sozinho.
 
-Dica: grava e depois usa **Proteger / Lock** na tag só quando tiver certeza — depois não dá pra regravar.
+Se ainda cair na notificação: Ajustes → pesquisa **Iniciar via NFC** → liga o Chrome. No primeiro toque, se pedir permissão, permite. Samsung: NFC → menu ⋮ → desliga “Mostrar notificações NFC” se existir.
+
+Dica: grava e depois usa **Proteger / Lock** na tag só quando tiver certeza — depois não dá pra regravar. iPhone ignora o registro de aplicativo e abre o Safari no URL.
 
 ---
 
