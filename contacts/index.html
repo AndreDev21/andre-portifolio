@@ -335,6 +335,12 @@
       var SHIRT_CROP = 0.80;
       var BASE = 16;
       var lastFit = '';
+      var brave = typeof navigator.brave !== 'undefined'
+        || /Brave/i.test(navigator.userAgent)
+        || (navigator.userAgentData && navigator.userAgentData.brands || []).some(function (b) {
+          return /Brave/i.test(b.brand || '');
+        });
+      var ZOOM = brave ? 1.12 : 1;
       function fit() {
         var target = portrait.clientWidth;
         if (!target) return false;
@@ -353,10 +359,12 @@
           scale *= room / crop;
           crop = room;
         }
+        scale *= ZOOM;
         var key = target + ':' + scale.toFixed(5) + ':' + crop.toFixed(1);
         if (key === lastFit) return true;
         lastFit = key;
         pre.style.transform = 'scale(' + scale + ')';
+        pre.style.left = ((target - natural * scale) / 2) + 'px';
         portrait.style.height = crop + 'px';
         return true;
       }
