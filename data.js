@@ -215,6 +215,6 @@ window.AM = {
   },
 
   footer: {
-    text: '~/André-Martins — construído com HTML, CSS e JS puro. Sem framework, sem pressa.',
+    text: 'André Martins',
   },
 };
