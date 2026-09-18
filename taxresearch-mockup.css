@@ -61,3 +61,96 @@
   color: var(--accent);
 }
 .tr-tick { font-family: var(--font-mono); font-size: 10px; color: var(--dim); margin-top: 6px; text-align: center; }
+
+/* OkCarro — placa → resultado */
+.ok-kicker {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  margin: 0 0 16px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.ok-form {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.ok-plate-wrap,
+.ok-plate {
+  font-family: var(--font-mono);
+  letter-spacing: .12em;
+}
+.ok-plate-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #f4f2f8;
+  color: #0b0814;
+  border-radius: var(--radius);
+  padding: 8px 22px 10px;
+  min-width: 168px;
+  border: 1px solid #cdc7dd;
+}
+.ok-plate-label {
+  font-size: 9px;
+  letter-spacing: .28em;
+  color: #3d3558;
+  font-weight: 600;
+}
+.ok-plate {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0b0814;
+}
+.ok-go {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 13px;
+  background: var(--accent);
+  color: var(--bg);
+  padding: 10px 16px;
+  border-radius: var(--radius);
+}
+.ok-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.ok-chips span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 4px 8px;
+  border-radius: var(--radius);
+}
+.ok-result-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.ok-result-head .ok-plate {
+  background: #f4f2f8;
+  padding: 6px 14px;
+  border-radius: var(--radius);
+  font-size: 16px;
+}
+.ok-ms { font-family: var(--font-mono); font-size: 12px; color: var(--accent); }
+.ok-car {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--text);
+  margin: 0 0 14px;
+}
+.ok-rows { display: flex; flex-direction: column; gap: 8px; }
+.ok-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--body);
+}
+.ok-row span:last-child { font-family: var(--font-mono); color: var(--accent); }

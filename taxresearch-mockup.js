@@ -92,4 +92,71 @@
     var shell = el('div', { class: 'mockup-shell' }, [tabs, views.painel, views.leads, views.outreach]);
     return shell;
   };
+
+  function renderOkConsulta() {
+    var view = el('div', { class: 'mockup-view', id: 'ok-consulta' });
+    view.appendChild(el('p', { class: 'ok-kicker', text: 'placa entrou, dado saiu' }));
+    view.appendChild(
+      el('div', { class: 'ok-form' }, [
+        el('div', { class: 'ok-plate-wrap' }, [
+          el('span', { class: 'ok-plate-label', text: 'BRASIL' }),
+          el('span', { class: 'ok-plate', text: 'ABC1D23' }),
+        ]),
+        el('span', { class: 'ok-go', text: 'consultar' }),
+      ])
+    );
+    var chips = el('div', { class: 'ok-chips' });
+    ['Batidas', 'Débitos', 'Multas', 'Leilão'].forEach(function (t) {
+      chips.appendChild(el('span', { text: t }));
+    });
+    view.appendChild(chips);
+    return view;
+  }
+
+  function renderOkResultado() {
+    var view = el('div', { class: 'mockup-view', id: 'ok-resultado', hidden: 'true' });
+    view.appendChild(
+      el('div', { class: 'ok-result-head' }, [
+        el('span', { class: 'ok-plate', text: 'ABC1D23' }),
+        el('span', { class: 'ok-ms', text: '0,8s' }),
+      ])
+    );
+    view.appendChild(el('p', { class: 'ok-car', text: 'Honda Civic LX 2020' }));
+    var rows = el('div', { class: 'ok-rows' });
+    [
+      ['Restrição', 'Nenhuma'],
+      ['Leilão', 'Não consta'],
+      ['Débitos', 'R$ 0,00'],
+      ['Score', '82'],
+    ].forEach(function (r) {
+      rows.appendChild(
+        el('div', { class: 'ok-row' }, [
+          el('span', { text: r[0] }),
+          el('span', { text: r[1] }),
+        ])
+      );
+    });
+    view.appendChild(rows);
+    return view;
+  }
+
+  window.AM_MOCKUPS.okcarro = function () {
+    var consulta = renderOkConsulta();
+    var resultado = renderOkResultado();
+    var tabs = el('div', { class: 'mockup-tabs' });
+    [
+      { id: 'consulta', label: 'Consulta', view: consulta },
+      { id: 'resultado', label: 'Resultado', view: resultado },
+    ].forEach(function (t, i) {
+      var btn = el('button', { type: 'button', text: t.label, class: i === 0 ? 'active' : '' });
+      btn.addEventListener('click', function () {
+        tabs.querySelectorAll('button').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        consulta.hidden = t.id !== 'consulta';
+        resultado.hidden = t.id !== 'resultado';
+      });
+      tabs.appendChild(btn);
+    });
+    return el('div', { class: 'mockup-shell' }, [tabs, consulta, resultado]);
+  };
 })();

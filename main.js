@@ -19,7 +19,7 @@
     var header = document.getElementById('header');
     header.appendChild(
       el('div', { class: 'header-inner' }, [
-        el('a', { class: 'brand', href: '#top', html: '&gt;/<span>' + D.meta.name.replace('>/', '') + '</span>' }),
+        el('a', { class: 'brand', href: '#top', html: '~/<span>' + D.meta.name.replace(/^~\//, '') + '</span>' }),
         el('nav', { class: 'nav' }, [
           el('a', { href: '#work' }, [document.createTextNode('projetos')]),
           el('a', { href: '#about' }, [document.createTextNode('sobre')]),
@@ -38,7 +38,22 @@
 
     var ctas = el('div', { class: 'hero-ctas' });
     D.hero.ctas.forEach(function (c, i) {
-      ctas.appendChild(el('a', { href: c.href, class: 'btn ' + (i === 0 ? 'btn-primary' : 'btn-ghost') }, [document.createTextNode(c.label)]));
+      var attrs = { href: c.href, class: 'btn ' + (i === 0 ? 'btn-primary' : 'btn-ghost') };
+      if (c.external) {
+        attrs.target = '_blank';
+        attrs.rel = 'noopener noreferrer';
+      }
+      ctas.appendChild(el('a', attrs, [document.createTextNode(c.label)]));
+    });
+
+    var metrics = el('div', { class: 'hero-metrics reveal' });
+    (D.hero.metrics || []).forEach(function (m) {
+      metrics.appendChild(
+        el('div', { class: 'hero-metric' }, [
+          el('strong', { text: m.value }),
+          el('span', { text: m.label }),
+        ])
+      );
     });
 
     var texto = el('div', { class: 'hero-text' });
@@ -46,6 +61,7 @@
     texto.appendChild(el('h1', { class: 'reveal', text: D.hero.greeting }));
     texto.appendChild(el('p', { class: 'reveal', text: D.hero.pitch }));
     texto.appendChild(el('p', { class: 'current reveal', text: D.hero.current }));
+    if (D.hero.metrics && D.hero.metrics.length) texto.appendChild(metrics);
     chips.classList.add('reveal');
     ctas.classList.add('reveal');
     texto.appendChild(chips);
@@ -72,35 +88,105 @@
   }
 
   /* ================= work ================= */
+  function lane(name) {
+    return D.projects.filter(function (p) { return p.lane === name; });
+  }
+
+  function cardPreview(p) {
+    if (p.preview === 'okcarro') {
+      return el('div', { class: 'card-preview ok-preview', 'aria-hidden': 'true' }, [
+        el('span', { class: 'ok-plate-mini', text: 'ABC1D23' }),
+        el('span', { class: 'ok-preview-arrow', text: '→' }),
+        el('span', { class: 'ok-preview-out', text: 'dado' }),
+      ]);
+    }
+    if (p.preview === 'taxresearch') {
+      return el('div', { class: 'card-preview tr-preview', 'aria-hidden': 'true' }, [
+        el('span', { html: '<strong>300+</strong> empresas' }),
+        el('span', { html: '<strong>40</strong> usuários' }),
+        el('span', { html: '<strong>623</strong> leads' }),
+      ]);
+    }
+    if (p.preview === 'ponto') {
+      return el('div', { class: 'card-preview ponto-preview', 'aria-hidden': 'true' }, [
+        el('span', { text: 'foto' }),
+        el('span', { class: 'ok-preview-arrow', text: '+' }),
+        el('span', { text: 'gps' }),
+        el('span', { class: 'ok-preview-arrow', text: '→' }),
+        el('span', { class: 'ok-preview-out', text: 'relatório' }),
+      ]);
+    }
+    return null;
+  }
+
+  function projectCard(p, compact) {
+    var kids = [
+      el('div', { class: 'project-card-top' }, [
+        el('span', { class: 'project-tag', text: p.tag }),
+        el('span', { class: 'project-status' + (p.live ? ' is-live' : ''), text: p.status }),
+      ]),
+    ];
+    var preview = !compact ? cardPreview(p) : null;
+    if (preview) kids.push(preview);
+    kids.push(el('h3', { text: p.title }));
+    if (p.metric && !compact) kids.push(el('p', { class: 'project-metric', text: p.metric }));
+    kids.push(el('p', { text: p.brief }));
+    if (!compact) {
+      var stackRow = el('div', { class: 'project-stack' });
+      p.stack.forEach(function (s) { stackRow.appendChild(el('span', { text: s })); });
+      kids.push(stackRow);
+    }
+    kids.push(el('span', { class: 'project-open', html: compact ? 'abrir &rarr;' : 'ver detalhes &rarr;' }));
+    var card = el('div', {
+      class: 'project-card reveal' + (p.mockup ? ' has-mockup' : '') + (p.lane === 'featured' ? ' is-featured' : '') + (compact ? ' is-compact' : ''),
+    }, kids);
+    card.addEventListener('click', function () { openPanel(p); });
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPanel(p); }
+    });
+    return card;
+  }
+
   function renderWork() {
     var work = document.getElementById('work');
     work.appendChild(
       el('div', { class: 'section-head reveal' }, [
         el('span', { class: 'section-kicker', text: '// projetos' }),
-        el('h2', { class: 'section-title', text: 'O que eu construí' }),
+        el('h2', { class: 'section-title', text: 'O que está no ar' }),
       ])
     );
 
-    var grid = el('div', { class: 'project-grid' });
-    D.projects.forEach(function (p) {
-      var card = el('div', { class: 'project-card reveal' + (p.mockup ? ' has-mockup' : '') }, [
-        el('div', { class: 'project-card-top' }, [
-          el('span', { class: 'project-tag', text: p.tag }),
-          el('span', { class: 'project-status' + (p.live ? ' is-live' : ''), text: p.status }),
-        ]),
-        el('h3', { text: p.title }),
-        el('p', { text: p.brief }),
-        (function () {
-          var stackRow = el('div', { class: 'project-stack' });
-          p.stack.forEach(function (s) { stackRow.appendChild(el('span', { text: s })); });
-          return stackRow;
-        })(),
-        el('span', { class: 'project-open', html: 'ver detalhes &rarr;' }),
-      ]);
-      card.addEventListener('click', function () { openPanel(p); });
-      grid.appendChild(card);
-    });
-    work.appendChild(grid);
+    var featured = el('div', { class: 'project-grid featured' });
+    lane('featured').forEach(function (p) { featured.appendChild(projectCard(p, false)); });
+    work.appendChild(featured);
+
+    var ship = lane('ship');
+    if (ship.length) {
+      work.appendChild(
+        el('div', { class: 'section-head ship-head reveal' }, [
+          el('span', { class: 'section-kicker', text: '// como eu entrego' }),
+          el('h2', { class: 'section-title', text: 'Infra e pipeline, não só tela' }),
+        ])
+      );
+      var shipGrid = el('div', { class: 'project-grid ship' });
+      ship.forEach(function (p) { shipGrid.appendChild(projectCard(p, true)); });
+      work.appendChild(shipGrid);
+    }
+
+    var more = lane('more');
+    if (more.length) {
+      work.appendChild(
+        el('div', { class: 'section-head more-head reveal' }, [
+          el('span', { class: 'section-kicker', text: '// também' }),
+          el('h2', { class: 'section-title', text: 'Outras coisas que estão rodando' }),
+        ])
+      );
+      var moreGrid = el('div', { class: 'project-grid more' });
+      more.forEach(function (p) { moreGrid.appendChild(projectCard(p, true)); });
+      work.appendChild(moreGrid);
+    }
   }
 
   /* ================= project panel ================= */
@@ -129,7 +215,29 @@
 
     panel.appendChild(el('span', { class: 'panel-tag', text: p.tag + ' · ' + p.status }));
     panel.appendChild(el('h2', { text: p.title }));
+
+    if (p.story) {
+      panel.appendChild(el('div', { class: 'panel-case' }, [
+        el('div', {}, [
+          el('span', { text: 'Problema' }),
+          el('p', { text: p.story.problem }),
+        ]),
+        el('div', {}, [
+          el('span', { text: 'O que eu fiz' }),
+          el('p', { text: p.story.action }),
+        ]),
+        el('div', {}, [
+          el('span', { text: 'Resultado' }),
+          el('p', { text: p.story.result }),
+        ]),
+      ]));
+    }
+
     panel.appendChild(el('p', { class: 'panel-overview', text: p.overview }));
+
+    if (p.mockup && window.AM_MOCKUPS && window.AM_MOCKUPS[p.mockup]) {
+      panel.appendChild(window.AM_MOCKUPS[p.mockup](p));
+    }
 
     var list = el('ul', { class: 'panel-highlights' });
     p.highlights.forEach(function (h) { list.appendChild(el('li', { text: h })); });
@@ -149,10 +257,6 @@
           html: 'ver no ar &nearr;',
         })
       );
-    }
-
-    if (p.mockup && window.AM_MOCKUPS && window.AM_MOCKUPS[p.mockup]) {
-      panel.appendChild(window.AM_MOCKUPS[p.mockup](p));
     }
 
     overlay.classList.add('open');
@@ -262,8 +366,17 @@
     catch (e) { return false; }
   }
 
+  function shouldSkipBoot() {
+    if (isDevMode()) return true;
+    try {
+      if (window.matchMedia('(max-width: 900px)').matches) return true;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return true;
+    } catch (e) {}
+    return false;
+  }
+
   function runLoader() {
-    if (isDevMode()) { finishBoot(); return; }
+    if (shouldSkipBoot()) { finishBoot(); return; }
 
     if (window.AsciiPhoto) asciiPhoto = window.AsciiPhoto.init('boot-ascii');
 
