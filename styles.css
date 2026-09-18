@@ -1,0 +1,700 @@
+/* ==========================================================================
+   André Martins — Portfolio
+   ========================================================================== */
+
+:root {
+  --bg: #0b0814;
+  --bg-2: #100c1c;
+  --surface: #161123;
+  --surface-2: #1c1630;
+  --border: #2a2145;
+  --border-2: #372b58;
+  --text: #f4f2f8;
+  --body: #cdc7dd;
+  --muted: #a89fc0;
+  --dim: #8b82a6;
+  --accent: #b78cff;
+  --accent-dim: #251a3d;
+  --danger: #ff8fa3;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --font-body: 'IBM Plex Sans', sans-serif;
+  --max: 1040px;
+  /* WM tiling: quina reta em tudo. Um valor só, pra não voltar a divergir. */
+  --radius: 2px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--body);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+body.loading { overflow: hidden; height: 100vh; }
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+button { font-family: inherit; }
+
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+
+/* ---------- background grid ---------- */
+.grid-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(to right, rgba(183, 140, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(183, 140, 255, 0.06) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+}
+.grid-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 55% 40% at 20% 0%, rgba(183, 140, 255, 0.14), transparent 70%),
+    radial-gradient(ellipse 45% 35% at 85% 10%, rgba(120, 90, 220, 0.12), transparent 70%);
+}
+
+/* ==========================================================================
+   Boot terminal
+   ========================================================================== */
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  padding: 24px;
+  transition: opacity .85s ease, visibility .85s ease, transform .85s ease, filter .85s ease;
+}
+.loader.done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: scale(1.04);
+  filter: blur(6px);
+}
+/* a caixa do terminal sai um pouco antes do fundo, pra não sumir tudo de bloco */
+.boot-terminal { transition: opacity .45s ease, transform .45s ease; }
+.loader.done .boot-terminal { opacity: 0; transform: translateY(-12px); }
+
+/* ---------- fundo ASCII/Matrix do boot ---------- */
+.ascii-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  /* só tira o peso dos cantos; não pode apagar o retrato, que fica à direita */
+  mask-image: radial-gradient(ellipse 100% 100% at 50% 50%, #000 80%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 100% 100% at 50% 50%, #000 80%, transparent 100%);
+}
+.ascii-canvas { display: block; width: 100%; height: 100%; }
+/* a figura vive num canvas próprio, pra poder voar até o hero no fim do boot */
+.ascii-figure { position: absolute; pointer-events: none; }
+
+/* Janela no estilo de um WM tiling: canto reto e borda fina de janela em foco,
+   em vez da moldura arredondada com os três botões do macOS. */
+.boot-terminal {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 640px;
+  border: 1px solid var(--border-2);
+  border-top: 2px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .45);
+}
+
+/* barra no espírito de i3bar/polybar: workspaces, título e status */
+.boot-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1;
+}
+/* logo do Arch desenhado em CSS — sem depender de fonte com o glifo */
+.boot-logo {
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 11px solid var(--accent);
+  margin-right: 4px;
+  opacity: .85;
+}
+.boot-ws {
+  padding: 3px 7px;
+  border-radius: var(--radius);
+  color: var(--dim);
+  background: var(--surface);
+}
+.boot-ws.is-active { color: var(--bg); background: var(--accent); font-weight: 600; }
+.boot-title {
+  margin-left: 8px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.boot-status {
+  margin-left: auto;
+  padding: 3px 7px;
+  border-radius: var(--radius);
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+.boot-body { padding: 18px 16px; min-height: 220px; display: flex; flex-direction: column; }
+.boot-log {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--body);
+  flex: 1;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+.boot-log .log-dim { color: var(--dim); }
+.boot-log .log-ok { color: var(--accent); }
+.boot-log .log-info { color: var(--muted); }
+.boot-log .log-fun { color: #eab676; }
+.boot-log .log-joke { color: var(--muted); font-style: italic; }
+.boot-log .log-warn { color: var(--danger); }
+.boot-input-line {
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--body);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.boot-prompt { color: var(--accent); }
+.boot-cursor {
+  width: 7px; height: 15px;
+  background: var(--accent);
+  animation: blink 1s steps(1) infinite;
+}
+.boot-cursor.off { display: none; }
+@keyframes blink { 50% { opacity: 0; } }
+.boot-hint {
+  margin-top: 14px;
+  align-self: flex-start;
+  background: none;
+  border: 1px solid var(--border-2);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 7px 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.boot-hint.hidden { display: none; }
+.boot-hint:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ==========================================================================
+   Header
+   ========================================================================== */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(11, 8, 20, 0.92);
+  backdrop-filter: blur(8px);
+  border-top: 2px solid var(--accent);
+  border-bottom: 1px solid var(--border);
+}
+.header-inner {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.brand {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text);
+  font-size: 15px;
+  text-decoration: none;
+}
+.brand span { color: var(--accent); }
+.nav { display: flex; gap: 24px; }
+.nav a {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+}
+.nav a {
+  padding: 5px 9px;
+  border-radius: var(--radius);
+  transition: background .15s ease, color .15s ease;
+}
+.nav a:hover { color: var(--accent); background: var(--surface); }
+/* o CTA é o "workspace ativo": preenchido, como no i3bar */
+.nav .nav-cta {
+  color: var(--bg);
+  background: var(--accent);
+  font-weight: 600;
+}
+.nav .nav-cta:hover { color: var(--bg); background: var(--accent); opacity: .88; }
+@media (max-width: 640px) {
+  .nav { gap: 14px; }
+  .nav .nav-label { display: none; }
+}
+
+/* ==========================================================================
+   Hero
+   ========================================================================== */
+.hero {
+  padding: 96px 24px 64px;
+  max-width: var(--max);
+  margin: 0 auto;
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 36px;
+  align-items: center;
+}
+.hero-text { min-width: 0; }
+
+/* Retrato em ASCII — texto puro, sem canvas, sem animação. */
+.hero-ascii {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: clamp(1.5px, 0.19vw, 2.74px);
+  /* entrelinha fechada: sem isso sobram vãos entre as linhas e o torso vira listrado */
+  line-height: 0.75;
+  letter-spacing: 0;
+  color: var(--accent);
+  opacity: .92;
+  white-space: pre;
+  user-select: none;
+  /* entra junto com o fim do boot */
+  opacity: 0;
+  transform: scale(1.03);
+  transition: opacity .9s ease, transform .9s ease;
+}
+.hero-ascii.in { opacity: .92; transform: none; }
+
+/* No mobile o retrato não entra: nem no boot, nem aqui. */
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .hero-ascii { display: none; }
+}
+.hero-kicker {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 18px;
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 6vw, 54px);
+  line-height: 1.15;
+  color: var(--text);
+  margin: 0 0 22px;
+}
+.hero p {
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--body);
+  max-width: 640px;
+  margin: 0 0 14px;
+}
+.hero .current { color: var(--muted); font-size: 15px; }
+.hero-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 28px 0 32px;
+}
+.chip {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 6px 10px;
+}
+.hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid transparent;
+}
+.btn-primary { background: var(--text); color: var(--bg); }
+.btn-ghost { background: transparent; color: var(--accent); border-color: var(--border-2); }
+.btn:hover { opacity: .88; }
+
+/* ==========================================================================
+   Work / project cards
+   ========================================================================== */
+.work { padding: 40px 24px 80px; max-width: var(--max); margin: 0 auto; }
+.section-head { margin-bottom: 36px; }
+.section-kicker {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 4vw, 32px);
+  color: var(--text);
+  margin: 8px 0 0;
+}
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
+}
+.project-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  /* a borda de topo já nasce com 2px e só troca de cor: acende no hover como
+     janela em foco, sem empurrar o layout */
+  border-top: 2px solid var(--border-2);
+  border-radius: var(--radius);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  cursor: pointer;
+  transition: border-color .2s ease, transform .2s ease;
+}
+.project-card:hover {
+  border-color: var(--border-2);
+  border-top-color: var(--accent); /* janela em foco */
+  transform: translateY(-2px);
+}
+.project-card.has-mockup { border-color: var(--border-2); }
+.project-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.project-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.project-status {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border-radius: var(--radius);
+  padding: 3px 8px;
+  white-space: nowrap;
+}
+.project-status.is-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.project-status.is-live::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  animation: live-pulse 1.8s ease-in-out infinite;
+}
+@keyframes live-pulse { 50% { opacity: .25; } }
+.project-card h3 {
+  font-family: var(--font-display);
+  font-size: 19px;
+  color: var(--text);
+  margin: 0;
+}
+.project-card p { font-size: 14px; line-height: 1.55; color: var(--body); margin: 0; flex: 1; }
+.project-stack { display: flex; flex-wrap: wrap; gap: 6px; }
+.project-stack span {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--muted);
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 3px 7px;
+}
+.project-open {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ---------- project panel (modal) ---------- */
+.panel-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(7, 5, 14, 0.72);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  /* senta abaixo da barra, como janela tiled abaixo do i3bar */
+  padding: 72px 16px 4vh;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease;
+  overflow-y: auto;
+}
+.panel-overlay.open { opacity: 1; pointer-events: auto; }
+.panel {
+  width: 100%;
+  max-width: 760px;
+  background: var(--bg-2);
+  border: 1px solid var(--border-2);
+  border-top: 2px solid var(--accent); /* janela em foco */
+  border-radius: var(--radius);
+  padding: 0 32px 32px;
+  position: relative;
+}
+/* barra de janela do painel, irmã da do terminal */
+.panel-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 -32px 20px;
+  padding: 8px 12px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.panel-path { color: var(--muted); }
+.panel-close {
+  margin-left: auto;
+  background: var(--surface);
+  border: none;
+  color: var(--muted);
+  border-radius: var(--radius);
+  padding: 3px 9px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.2;
+}
+.panel-close:hover { color: var(--bg); background: var(--danger); }
+.panel-tag { font-family: var(--font-mono); font-size: 12px; color: var(--dim); }
+.panel h2 { font-family: var(--font-display); font-size: 26px; color: var(--text); margin: 8px 0 16px; }
+.panel-overview { font-size: 15px; line-height: 1.7; color: var(--body); margin-bottom: 22px; }
+.panel-highlights { list-style: none; margin: 0 0 24px; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.panel-highlights li {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--body);
+  padding-left: 20px;
+  position: relative;
+}
+.panel-highlights li::before {
+  content: '›';
+  position: absolute; left: 0; top: -1px;
+  color: var(--accent);
+  font-family: var(--font-mono);
+}
+.panel-stack { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+
+.panel-live {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: var(--bg);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  transition: opacity .2s ease;
+}
+.panel-live:hover { opacity: .88; }
+
+/* ---------- mockup shell (shared by taxresearch/okcarro mockups) ---------- */
+.mockup-shell {
+  margin-top: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface);
+}
+.mockup-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 8px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+.mockup-tabs button {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--dim);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius);
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.mockup-tabs button.active { background: var(--accent-dim); color: var(--accent); }
+.mockup-view { padding: 20px; min-height: 220px; }
+.mockup-view[hidden] { display: none; }
+
+/* ==========================================================================
+   About
+   ========================================================================== */
+.about { padding: 40px 24px 80px; max-width: var(--max); margin: 0 auto; }
+.about-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 48px; }
+@media (max-width: 780px) { .about-grid { grid-template-columns: 1fr; gap: 24px; } }
+.about h2 {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 4vw, 32px);
+  color: var(--text);
+  margin: 8px 0 20px;
+}
+.about-pull {
+  font-family: var(--font-display);
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.about p { font-size: 15px; line-height: 1.7; color: var(--body); margin: 0 0 16px; }
+.about-signoff { color: var(--muted); font-family: var(--font-mono); font-size: 13px; }
+
+/* ==========================================================================
+   Contact
+   ========================================================================== */
+.contact { padding: 40px 24px 96px; max-width: var(--max); margin: 0 auto; }
+.contact-inner {
+  border: 1px solid var(--border-2);
+  border-top: 2px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+}
+.contact-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.contact-path { color: var(--muted); }
+.contact-status {
+  margin-left: auto;
+  padding: 3px 7px;
+  border-radius: var(--radius);
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+.contact-body {
+  padding: 40px;
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: 40px;
+}
+@media (max-width: 780px) {
+  .contact-body { grid-template-columns: 1fr; padding: 28px; }
+  .channel {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}
+.contact h2 { font-family: var(--font-display); font-size: clamp(22px, 4vw, 30px); color: var(--text); margin: 0 0 14px; }
+.contact-body > div > p { font-size: 15px; line-height: 1.65; color: var(--body); }
+.channels { display: flex; flex-direction: column; gap: 10px; }
+.channel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--border);
+  border-radius: var(--radius);
+  text-decoration: none;
+  background: var(--bg-2);
+  transition: border-color .2s ease;
+}
+.channel:hover {
+  border-color: var(--border-2);
+  border-top-color: var(--accent);
+}
+.channel-label { font-family: var(--font-mono); font-size: 13px; color: var(--text); overflow-wrap: anywhere; }
+.channel-note { font-family: var(--font-mono); font-size: 11px; color: var(--dim); }
+.card-cta {
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--bg);
+  background: var(--accent);
+  padding: 12px 18px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  font-size: 14px;
+}
+.contact-location { margin-top: 18px; font-family: var(--font-mono); font-size: 12px; color: var(--dim); }
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+.footer {
+  border-top: 1px solid var(--border);
+  background: var(--bg-2);
+  padding: 12px 24px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--dim);
+}
+
+/* ==========================================================================
+   Reveal-on-scroll (used by main.js / GSAP fallback)
+   ========================================================================== */
+.reveal { opacity: 0; transform: translateY(18px); }
+.reveal.in { opacity: 1; transform: none; transition: opacity .6s ease, transform .6s ease; }
+/* o hero entra em cascata logo depois do boot, em vez de tudo de uma vez */
+.hero-text .reveal.in { transition-delay: var(--stagger, 0ms); }

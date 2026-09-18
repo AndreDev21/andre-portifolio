@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>André M. Martins — Cartão de Contato</title>
+<meta name="description" content="Full-stack pleno-sênior — Node.js, NestJS, Next.js, Flutter, PHP, Docker, Oracle Cloud.">
+<meta property="og:title" content="André M. Martins — Full-Stack Developer">
+<meta property="og:description" content="Full-stack pleno-sênior — Node.js, NestJS, Next.js, Flutter, PHP, Docker, Oracle Cloud. Aberto a freelas remotos e vagas híbridas CLT/PJ.">
+<meta property="og:type" content="profile">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0814;
+    --bg-2: #100c1c;
+    --surface: #161123;
+    --border: #2a2145;
+    --border-2: #372b58;
+    --text: #f4f2f8;
+    --body: #cdc7dd;
+    --muted: #a89fc0;
+    --dim: #8b82a6;
+    --accent: #b78cff;
+    --accent-dim: #251a3d;
+    --radius: 2px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); height: 100%; overflow: hidden; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100dvh;
+    padding: 12px;
+  }
+  .card {
+    width: 100%;
+    max-width: 420px;
+    min-width: 0;
+    max-height: calc(100dvh - 24px);
+    background: var(--surface);
+    border: 1px solid var(--border-2);
+    border-top: 2px solid var(--accent);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .card-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+  }
+  .card-path { color: var(--muted); }
+  .lang-toggle {
+    margin-left: auto;
+    display: flex;
+    gap: 4px;
+  }
+  .lang-toggle button {
+    padding: 6px 12px;
+    min-height: 32px;
+    border-radius: var(--radius);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    background: var(--surface);
+    color: var(--dim);
+  }
+  .lang-toggle button.active {
+    background: var(--accent);
+    color: var(--bg);
+  }
+  .card-body {
+    flex: 1;
+    min-height: 0;
+    padding: 0 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .portrait {
+    position: relative;
+    flex: 0 0 auto;
+    margin: 0 -20px;
+    overflow: hidden;
+  }
+  .back-link {
+    position: absolute;
+    top: 10px;
+    left: 16px;
+    z-index: 2;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .back-link:hover { color: var(--accent); }
+  .card-ascii {
+    margin: 0;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'IBM Plex Mono', monospace;
+    line-height: 0.75;
+    letter-spacing: 0;
+    color: var(--accent);
+    opacity: .92;
+    white-space: pre;
+    user-select: none;
+    text-align: left;
+  }
+  .name-block {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 48px 16px 2px;
+    background: linear-gradient(to bottom, transparent 0%, var(--surface) 62%);
+  }
+  .name-block h1 {
+    margin: 0;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .name-block p {
+    margin: 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .card-rest {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .bio {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--body);
+    text-align: left;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+  .chip {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 4px 8px;
+  }
+  .ctas {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+  .cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 12px 18px;
+    border-radius: var(--radius);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+  }
+  .cta:hover { opacity: .88; }
+  .cta-linkedin {
+    background: var(--text);
+    color: var(--bg);
+  }
+  .cta-whatsapp {
+    background: var(--accent-dim);
+    color: var(--accent);
+    border: 1px solid var(--border-2);
+  }
+  .secondary {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .secondary a {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    text-decoration: none;
+  }
+  .secondary a:hover { color: var(--accent); }
+  .location {
+    margin: 0;
+    text-align: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--dim);
+  }
+  [data-i18n][hidden] { display: none; }
+</style>
+</head>
+<body>
+<main class="card">
+  <div class="card-bar">
+    <span class="card-path">~/andre</span>
+    <div class="lang-toggle" role="group" aria-label="Idioma / Language">
+      <button type="button" id="btn-pt" aria-pressed="true">PT</button>
+      <button type="button" id="btn-en" aria-pressed="false">EN</button>
+    </div>
+  </div>
+
+  <div class="card-body">
+  <div class="portrait">
+  <a class="back-link" href="../">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    <span data-i18n="pt">portfólio</span><span data-i18n="en" hidden>portfolio</span>
+  </a>
+
+  <pre class="card-ascii" id="card-ascii" role="img" aria-label="Retrato de André, formado pelo vazio numa nuvem de caracteres"></pre>
+
+  <div class="name-block">
+    <h1>André M. Martins</h1>
+    <p>
+      <span data-i18n="pt">Desenvolvedor Full-Stack · Pleno-Sênior</span><span data-i18n="en" hidden>Full-Stack Developer · Senior</span>
+    </p>
+  </div>
+  </div>
+
+  <div class="card-rest">
+  <p class="bio">
+    <span data-i18n="pt">Full-stack pleno-sênior, atuação end-to-end. Lidero o TaxResearch (plataforma de análise fiscal, 300+ clientes empresariais) na BJGroup, coordenando e mentorando um dev júnior. Stack: Node.js, NestJS, Next.js, Flutter, PHP e Docker — infraestrutura própria em Oracle Cloud. Aberto a freelas remotos e vagas híbridas CLT/PJ.</span>
+    <span data-i18n="en" hidden>Senior full-stack developer, end-to-end ownership. Leading TaxResearch (fiscal analysis platform, 300+ enterprise clients) at BJGroup, mentoring a junior developer. Stack: Node.js, NestJS, Next.js, Flutter, PHP and Docker — self-managed Oracle Cloud infrastructure. Open to remote freelance work and hybrid CLT/PJ roles.</span>
+  </p>
+
+  <div class="chips">
+    <span class="chip">Node.js</span>
+    <span class="chip">NestJS</span>
+    <span class="chip">Next.js</span>
+    <span class="chip">Flutter</span>
+    <span class="chip">PHP</span>
+    <span class="chip">Docker</span>
+    <span class="chip">Oracle Cloud</span>
+  </div>
+
+  <div class="ctas">
+    <a class="cta cta-linkedin" href="https://www.linkedin.com/in/andre-mattedi-martins/" target="_blank" rel="noopener">
+      <span data-i18n="pt">Conectar no LinkedIn</span><span data-i18n="en" hidden>Connect on LinkedIn</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+    </a>
+    <a class="cta cta-whatsapp" href="https://wa.me/5519999855040?text=Ol%C3%A1%20Andr%C3%A9!%20Vi%20seu%20portf%C3%B3lio." target="_blank" rel="noopener">
+      <span data-i18n="pt">Chamar no WhatsApp</span><span data-i18n="en" hidden>Message on WhatsApp</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+    </a>
+  </div>
+
+  <div class="secondary">
+    <a href="https://github.com/AndreDev21" target="_blank" rel="noopener">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+      GitHub
+    </a>
+    <a href="mailto:andredev2103@gmail.com">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+      <span data-i18n="pt">E-mail</span><span data-i18n="en" hidden>Email</span>
+    </a>
+  </div>
+
+  <p class="location">
+    <span data-i18n="pt">Serra Negra, SP · Brasil</span><span data-i18n="en" hidden>Serra Negra, SP · Brazil</span>
+  </p>
+  </div>
+  </div>
+
+</main>
+
+<script src="../ascii-art.js"></script>
+<script src="../ascii-photo.js"></script>
+<script>
+  (function () {
+    var pre = document.getElementById('card-ascii');
+    var portrait = document.querySelector('.portrait');
+    var rest = document.querySelector('.card-rest');
+    var bar = document.querySelector('.card-bar');
+    if (pre && portrait && window.AM_ASCII_ART && window.AsciiPhoto) {
+      var artLines = window.AM_ASCII_ART.split('\n');
+      if (artLines.length && !artLines[artLines.length - 1]) artLines.pop();
+      pre.textContent = window.AsciiPhoto.cloudText(artLines);
+      var SHIRT_CROP = 0.80;
+      function fit() {
+        var target = portrait.clientWidth;
+        if (!target) return;
+        var sample = (pre.textContent.split('\n')[0] || '');
+        var probe = document.createElement('span');
+        probe.style.cssText = 'position:absolute;left:-9999px;top:0;font:10px "IBM Plex Mono",monospace;white-space:pre;';
+        probe.textContent = sample;
+        document.body.appendChild(probe);
+        var natural = probe.getBoundingClientRect().width || 1;
+        document.body.removeChild(probe);
+        var font = 10 * target / natural;
+        var rows = pre.textContent.split('\n').length;
+        var fullH = rows * 0.75 * font;
+        var crop = fullH * SHIRT_CROP;
+        var room = window.innerHeight
+          - 24
+          - (bar ? bar.offsetHeight : 0)
+          - (rest ? rest.offsetHeight : 0)
+          - 10;
+        if (room < 120) room = 120;
+        if (crop > room) {
+          font *= room / crop;
+          crop = room;
+        }
+        pre.style.fontSize = font + 'px';
+        portrait.style.height = crop + 'px';
+      }
+      fit();
+      window.addEventListener('resize', fit);
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+    }
+
+    var btnPt = document.getElementById('btn-pt');
+    var btnEn = document.getElementById('btn-en');
+    var ptNodes = document.querySelectorAll('[data-i18n="pt"]');
+    var enNodes = document.querySelectorAll('[data-i18n="en"]');
+
+    function setLang(lang) {
+      var isPt = lang === 'pt';
+      ptNodes.forEach(function (el) { el.hidden = !isPt; });
+      enNodes.forEach(function (el) { el.hidden = isPt; });
+      btnPt.classList.toggle('active', isPt);
+      btnEn.classList.toggle('active', !isPt);
+      btnPt.setAttribute('aria-pressed', String(isPt));
+      btnEn.setAttribute('aria-pressed', String(!isPt));
+      document.documentElement.lang = isPt ? 'pt-BR' : 'en';
+      try { localStorage.setItem('lang', lang); } catch (e) {}
+    }
+
+    btnPt.addEventListener('click', function () { setLang('pt'); });
+    btnEn.addEventListener('click', function () { setLang('en'); });
+
+    var saved = null;
+    try { saved = localStorage.getItem('lang'); } catch (e) {}
+    setLang(saved === 'en' ? 'en' : 'pt');
+  })();
+</script>
+</body>
+</html>

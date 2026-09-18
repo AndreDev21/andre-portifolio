@@ -1,0 +1,63 @@
+/* TaxResearch flagship mockup */
+.tr-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+.tr-kpi {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+}
+.tr-kpi span { display: block; }
+.tr-kpi .tr-kpi-value { font-family: var(--font-display); font-size: 20px; color: var(--accent); font-weight: 600; }
+.tr-kpi .tr-kpi-label { font-family: var(--font-mono); font-size: 10.5px; color: var(--dim); margin-top: 4px; }
+
+.tr-bars { display: flex; align-items: flex-end; gap: 6px; height: 70px; margin-top: 6px; }
+.tr-bars i {
+  flex: 1;
+  background: linear-gradient(to top, var(--accent-dim), var(--accent));
+  border-radius: var(--radius) var(--radius) 0 0;
+  opacity: .85;
+}
+
+.tr-leads-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.tr-leads-head span:first-child { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.tr-leads-head span:last-child { font-family: var(--font-mono); font-size: 12px; color: var(--accent); }
+.tr-lead-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+  background: var(--bg-2);
+}
+.tr-lead-row span:first-child { font-size: 13px; color: var(--body); }
+.tr-lead-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-2);
+}
+.tr-lead-badge.novo { color: var(--muted); }
+.tr-lead-badge.contatado { color: #eab676; border-color: #4a3a24; }
+.tr-lead-badge.qualificado { color: var(--accent); border-color: var(--border-2); }
+
+.tr-chat { display: flex; flex-direction: column; gap: 8px; max-width: 320px; margin: 0 auto; }
+.tr-bubble {
+  align-self: flex-start;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 9px 12px;
+  font-size: 12.5px;
+  color: var(--body);
+}
+.tr-bubble.out {
+  align-self: flex-end;
+  background: var(--accent-dim);
+  border-color: var(--border-2);
+  border-radius: var(--radius);
+  color: var(--accent);
+}
+.tr-tick { font-family: var(--font-mono); font-size: 10px; color: var(--dim); margin-top: 6px; text-align: center; }
