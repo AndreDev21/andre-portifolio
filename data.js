@@ -189,7 +189,7 @@ window.AM = {
   ],
 
   about: {
-    headline: 'Antes de ser profissão, era curiosidade.',
+    headline: 'Olho o fluxo real antes da arquitetura.',
     pull:
       'Em algum momento, todo sistema que eu uso me desperta a vontade de saber como ele funciona por dentro. <br> Foi assim que fui parar em ERP, depois em infra, depois em automação.',
     paragraphs: [
