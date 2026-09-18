@@ -24,18 +24,20 @@ Arquivos do QR (já gerados nesta pasta):
 Qualquer tag **NTAG213** (ou maior: 215/216) serve — a URL é curta. Cartão PVC, adesivo redondo ou chaveiro.
 
 1. Instala **NFC Tools** (Android ou iPhone).
-2. Abre **Escrever / Write** → **Adicionar um registro** → **URL / URI**.
-3. Cola:
+2. Se já gravou o Chrome no cartão: **Outros → Apagar / Erase**.
+3. Abre **Escrever / Write** → **Adicionar um registro** → **URL / URI** (não texto, não aplicativo).
+4. Cola:
 
    `https://andredev21.github.io/andre-portifolio/contacts/`
 
-4. **Adicionar um registro** de novo → **Aplicativo / Application** → **Chrome** (`com.android.chrome`). Sem esse segundo registro, Android 15/16 manda o https só pra barra de notificação.
-5. **Escrever** e encosta a tag na parte de trás do celular (no Android o ponto NFC costuma ficar no meio; no iPhone, no topo).
-6. Sai do NFC Tools, tela ligada e desbloqueada, testa de novo: o Chrome deve abrir o cartão sozinho.
+5. Confere que existe **um** registro só. **Escrever** e encosta a tag na parte de trás do celular (Android: meio das costas; iPhone: topo).
+6. Sai do NFC Tools, tela ligada e desbloqueada, testa.
 
-Se ainda cair na notificação: Ajustes → pesquisa **Iniciar via NFC** → liga o Chrome. No primeiro toque, se pedir permissão, permite. Samsung: NFC → menu ⋮ → desliga “Mostrar notificações NFC” se existir.
+Não grava registro de **Aplicativo / Chrome**. Sem Chrome no celular da outra pessoa, esse registro manda pra Play Store em vez do cartão.
 
-Dica: grava e depois usa **Proteger / Lock** na tag só quando tiver certeza — depois não dá pra regravar. iPhone ignora o registro de aplicativo e abre o Safari no URL.
+No Android 15/16 o sistema pode mandar o `https` do NFC pra notificação no **primeiro** toque — isso é o Android, não o cartão. Ajustes → **Iniciar via NFC** → liga o navegador padrão; se pedir permissão, permite. iPhone abre o Safari sozinho.
+
+Dica: grava e depois usa **Proteger / Lock** na tag só quando tiver certeza — depois não dá pra regravar.
 
 ---
 
