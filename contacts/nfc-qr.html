@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Configurar NFC e QR — André Martins</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0814;
+    --bg-2: #100c1c;
+    --surface: #161123;
+    --border: #2a2145;
+    --text: #f4f2f8;
+    --body: #cdc7dd;
+    --muted: #a89fc0;
+    --accent: #b78cff;
+    --accent-dim: #251a3d;
+    --radius: 2px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--body);
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    padding: 20px 16px 48px;
+    max-width: 440px;
+    margin-inline: auto;
+  }
+  h1 { font-family: 'Space Grotesk', sans-serif; color: var(--text); font-size: 22px; margin: 8px 0 4px; }
+  .kicker { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: var(--accent); }
+  .lead { font-size: 14px; line-height: 1.5; margin: 0 0 20px; }
+  h2 { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: var(--accent); text-transform: uppercase; letter-spacing: .06em; margin: 28px 0 10px; }
+  ol { margin: 0; padding-left: 20px; }
+  li { margin: 0 0 10px; font-size: 14px; line-height: 1.45; }
+  .qr-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--accent);
+    padding: 12px;
+  }
+  .qr-wrap img { width: 100%; height: auto; display: block; }
+  .url {
+    display: block;
+    width: 100%;
+    margin: 12px 0;
+    padding: 12px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px;
+    word-break: break-all;
+  }
+  .btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 14px 16px;
+    margin: 8px 0;
+    border: none;
+    border-radius: var(--radius);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .btn-primary { background: var(--accent); color: var(--bg); }
+  .btn-ghost { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--border); }
+  .ok { color: var(--accent); font-size: 13px; min-height: 1.2em; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+  <p class="kicker">~/andre · setup</p>
+  <h1>Gravar o cartão NFC e salvar o QR</h1>
+  <p class="lead">Faz os dois neste celular. Destino: o cartão de contato.</p>
+
+  <h2>1. Salvar o QR na galeria</h2>
+  <div class="qr-wrap">
+    <img src="qr-galeria.png" alt="QR Code do cartão de contato de André Martins" id="qr-img">
+  </div>
+  <p class="lead" style="margin-top:12px">Segura a imagem acima → <strong>Salvar imagem</strong> / <strong>Download</strong>. Ela cai na galeria. No iPhone, se não aparecer o salvar, usa o botão abaixo.</p>
+  <a class="btn btn-ghost" href="qr-galeria.png" download="andre-martins-cartao-qr.png">Baixar QR pra galeria</a>
+
+  <h2>2. Copiar o link</h2>
+  <input class="url" id="url" readonly value="https://andredev21.github.io/andre-portifolio/contacts/">
+  <button type="button" class="btn btn-primary" id="copy">Copiar URL</button>
+  <p class="ok" id="copied"></p>
+
+  <h2>3. Gravar o cartão NFC</h2>
+  <ol>
+    <li>Instala o <a href="https://play.google.com/store/apps/details?id=com.wakdev.wdnfc">NFC Tools</a> (Android) ou <a href="https://apps.apple.com/app/nfc-tools/id1252962749">NFC Tools</a> (iPhone).</li>
+    <li>Abre o app → <strong>Escrever</strong> / <strong>Write</strong>.</li>
+    <li><strong>Adicionar um registro</strong> → <strong>URL / URI</strong> (não texto, não contato).</li>
+    <li>Cola a URL copiada acima. Tem que começar com <code>https://</code>.</li>
+    <li>Toca em <strong>Escrever / Write / Escrever + NFC</strong>.</li>
+    <li>Encosta o cartão na traseira do celular e segura 2 segundos (Android: no meio das costas; iPhone: no topo, perto da câmera).</li>
+    <li>Quando der “sucesso”, afasta. Testa encostando de novo: o navegador tem que abrir o cartão sozinho.</li>
+  </ol>
+  <a class="btn btn-ghost" href="https://play.google.com/store/apps/details?id=com.wakdev.wdnfc">Abrir NFC Tools na Play Store</a>
+
+  <h2>4. Conferir</h2>
+  <ol>
+    <li>NFC: outro celular (ou o mesmo, depois de gravar) encosta no cartão → abre <a href="https://andredev21.github.io/andre-portifolio/contacts/">o cartão</a>.</li>
+    <li>QR: abre a galeria, mostra a foto, aponta a câmera de outro celular → o mesmo destino.</li>
+  </ol>
+  <p class="lead">Não trava a tag (Lock) até o teste passar. Depois de travar, não dá pra regravar.</p>
+
+  <p class="lead"><a href="./">Voltar ao cartão</a></p>
+
+<script>
+  var url = document.getElementById('url');
+  document.getElementById('copy').addEventListener('click', function () {
+    url.select();
+    url.setSelectionRange(0, 999);
+    navigator.clipboard.writeText(url.value).then(function () {
+      document.getElementById('copied').textContent = 'Copiado.';
+    }).catch(function () {
+      document.execCommand('copy');
+      document.getElementById('copied').textContent = 'Copiado.';
+    });
+  });
+</script>
+</body>
+</html>
