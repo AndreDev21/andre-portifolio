@@ -1,0 +1,12 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Martins;André M.;;
+FN:André M. Martins
+TITLE:Full-Stack Developer
+TEL;TYPE=CELL,VOICE:+5519999855040
+EMAIL;TYPE=INTERNET:andredev2103@gmail.com
+URL;TYPE=LinkedIn:https://www.linkedin.com/in/andre-mattedi-martins/
+URL;TYPE=GitHub:https://github.com/AndreDev21
+ADR;TYPE=HOME:;;Serra Negra;SP;;Brasil
+NOTE:Full-stack pleno-sênior — Node.js\, NestJS\, Next.js\, Flutter\, PHP\, Docker\, Oracle Cloud. Aberto a freelas remotos e vagas híbridas CLT/PJ.
+END:VCARD
