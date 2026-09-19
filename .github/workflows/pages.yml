@@ -1,4 +1,4 @@
-name: Deploy GitHub Pages
+name: Sync GitHub Pages
 
 on:
   push:
@@ -6,22 +6,16 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: pages
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  sync:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Publish main to gh-pages
+        run: git push origin HEAD:gh-pages --force
